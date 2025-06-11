@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 import React, { useEffect, } from 'react'
 import { io } from 'socket.io-client';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/store/types';
+import { RootState } from '@/store/store';
 import { setMessage, setMessages } from '@/store/slices/messageSlice';
 import { setUsers, setRoom } from '@/store/slices/roomSlice';
 import Username from '@/components/AppComponents/username';
@@ -14,18 +14,12 @@ config();
 const socket = io(`http://localhost:1111`);
 
 function Room() {
-    // const [message, setMessage] = useState<string>("");
-    // const [messages, setMessages] = useState<string[]>([]);
-    // const [users, setUser] = useState<string[]>([]);
-    // const [room, setRoom] = useState<string>("");
-
     const message = useSelector((state: RootState) => state.message.message);
     const messages = useSelector((state: RootState) => state.message.messages);
     const users = useSelector((state: RootState) => state.room.users);
     const room = useSelector((state: RootState) => state.room.room);
 
     const dispatch = useDispatch();
-
     useEffect(() => {
         socket.on("recive-message", dataS => {
             const message = dataS.data.message;
@@ -33,11 +27,6 @@ function Room() {
             dispatch(setMessages([...messages, message]))
             dispatch(setUsers([...users, user]))
         })
-        // socket.on("check", (cb) => {
-        //     cb("checked");
-        //     console.log("checked");
-
-        // })
 
         console.log(messages);
 

@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { Provider } from "react-redux";
 import { ReduxProvider } from "@/store/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin", "cyrillic"],
+  weight: "400",
+  style: "normal",
 });
 
 const geistMono = Geist_Mono({
@@ -29,7 +34,7 @@ export default function RootLayout({
     <ReduxProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${montserrat.className} ${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ThemeProvider
             attribute="class"

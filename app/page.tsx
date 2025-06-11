@@ -1,7 +1,30 @@
+"use client";
+import ActiveRooms from "@/components/AppComponents/ClientComponents/activeRoomsList";
 import { ModeToggle } from "@/components/ui/toggle-mode-theme";
+import { RootState } from "@/store/store";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { io } from "socket.io-client";
+
+const socket = io(`http://localhost:1111`);
 
 export default function Home() {
+
+  const dispatch = useDispatch();
+  const createdRooms = useSelector((state: RootState) => state.createRoom.createdRooms);
+
+  // socket.on("room-created", (createdRooms: ) => {
+  // TODO: дописать компонент для отслеживания созданных и активных комнат
+  // })
+
+  console.log("NOT IN USEEFFECT", createdRooms);
+
+  useEffect(() => {
+    console.log("IN USEEFFECT", createdRooms);
+
+  }, [createdRooms]);
+
   return (
     <section className="flex items-center justify-center flex-col gap-2 h-screen w-screen">
       <div className="flex items-center justify-center w-1/2 h-1/2 bg-background border-2 border-border rounded-md">
@@ -30,6 +53,11 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      {
+        createdRooms.length > 0 && <ActiveRooms />
+      }
+      <ActiveRooms />
+
       <ModeToggle />
     </section>
   );

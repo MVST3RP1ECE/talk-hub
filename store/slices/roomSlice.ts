@@ -7,7 +7,7 @@ export type TRoomState = {
 
 const initialState: TRoomState = {
     room: "",
-    users: []
+    users: [] // Пустое
 };
 
 export const roomSlice = createSlice({
@@ -18,7 +18,7 @@ export const roomSlice = createSlice({
             state.room = action.payload;
         },
         setUsers(state, action: PayloadAction<string[]>) {
-            state.users = action.payload;
+            state.users = [...state.users, ...action.payload]
         }
     }
 });
