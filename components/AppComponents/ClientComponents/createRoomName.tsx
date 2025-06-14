@@ -1,6 +1,7 @@
 "use client";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import useSocket from '@/hooks/useSocket';
 import { setCreatedRooms, setRoomName, setUserName } from '@/store/slices/createRoomSlice';
 import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
@@ -9,6 +10,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 function CreateRoomName() {
+    const socket = useSocket();
     const roomName = useSelector((state: RootState) => state.createRoom.roomName)
     const userName = useSelector((state: RootState) => state.createRoom.userName)
     const router = useRouter();
@@ -18,6 +20,8 @@ function CreateRoomName() {
         await dispatch(setRoomName(roomName))
         await dispatch(setUserName(userName))
         await dispatch(setCreatedRooms([{ roomName, userName }]))
+
+        socket.emit("room-created", { roomName, userName })
         console.log(roomName, userName);
 
         router.push(`/room/${roomName}`);

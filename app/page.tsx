@@ -1,32 +1,42 @@
 "use client";
 import ActiveRooms from "@/components/AppComponents/ClientComponents/activeRoomsList";
+import SetUserName from "@/components/AppComponents/ClientComponents/setUserName";
 import { ModeToggle } from "@/components/ui/toggle-mode-theme";
+import useSocket from "@/hooks/useSocket";
+import { setCreatedRooms, TCreatedRooms, TCreateRoomState } from "@/store/slices/createRoomSlice";
 import { RootState } from "@/store/store";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { io } from "socket.io-client";
-
-const socket = io(`http://localhost:1111`);
 
 export default function Home() {
 
+  const socket = useSocket();
+  // console.log(socket);
+
+  if (!socket) return null;
   const dispatch = useDispatch();
   const createdRooms = useSelector((state: RootState) => state.createRoom.createdRooms);
 
-  // socket.on("room-created", (createdRooms: ) => {
-  // TODO: дописать компонент для отслеживания созданных и активных комнат
-  // })
-
-  console.log("NOT IN USEEFFECT", createdRooms);
-
   useEffect(() => {
-    console.log("IN USEEFFECT", createdRooms);
+    socket.on("check-rooms", (data: TCreatedRooms[]) => {
+      dispatch(setCreatedRooms(data));
+    });
+
+    socket.on("room-created", (data: TCreateRoomState) => {
+      dispatch(setCreatedRooms(Array(data)))
+    })
+
+    socket.on("room-closed", (data: TCreatedRooms) => {
+      console.log("ROOM IS CLOSED -", data);
+      // dispatch(setCreatedRooms(data => data.filter))
+    })
 
   }, [createdRooms]);
 
   return (
     <section className="flex items-center justify-center flex-col gap-2 h-screen w-screen">
+      <SetUserName />
       <div className="flex items-center justify-center w-1/2 h-1/2 bg-background border-2 border-border rounded-md">
         <div className="flex w-full h-1/2 rounded-md justify-around">
           <Link
@@ -56,8 +66,6 @@ export default function Home() {
       {
         createdRooms.length > 0 && <ActiveRooms />
       }
-      <ActiveRooms />
-
       <ModeToggle />
     </section>
   );

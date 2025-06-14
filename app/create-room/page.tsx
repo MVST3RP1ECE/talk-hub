@@ -1,12 +1,6 @@
 import CreateRoomName from '@/components/AppComponents/ClientComponents/createRoomName'
 import React from 'react'
 
-/*
-
-    СЕРВЕРНЫЙ КОМПОНЕНТ
-
-*/
-
 function CreateRoom() {
     return (
         <section className="flex items-center justify-center flex-col gap-2 h-screen w-screen">

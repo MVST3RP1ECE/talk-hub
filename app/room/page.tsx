@@ -3,21 +3,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { config } from 'dotenv';
 import React, { useEffect, } from 'react'
-import { io } from 'socket.io-client';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setMessage, setMessages } from '@/store/slices/messageSlice';
 import { setUsers, setRoom } from '@/store/slices/roomSlice';
 import Username from '@/components/AppComponents/username';
+import useSocket from '@/hooks/useSocket';
 config();
 
-const socket = io(`http://localhost:1111`);
 
 function Room() {
+
+    const socket = useSocket();
     const message = useSelector((state: RootState) => state.message.message);
     const messages = useSelector((state: RootState) => state.message.messages);
     const users = useSelector((state: RootState) => state.room.users);
     const room = useSelector((state: RootState) => state.room.room);
+    const userName = useSelector((state: RootState) => state.createRoom.userName);
+
+    console.log(userName);
 
     const dispatch = useDispatch();
     useEffect(() => {
@@ -37,7 +41,7 @@ function Room() {
 
     const joinRoom = () => {
         if (room != "") {
-            socket.emit("join-room", { room })
+            socket.emit("join-room", { roomName: room })
             console.log(room);
             dispatch(setRoom(room))
         }
@@ -45,7 +49,7 @@ function Room() {
 
     const sendMessage = () => {
         dispatch(setMessages([...messages, message]))
-        socket.emit("send-message", { message: message, room: room });
+        socket.emit("send-message", { message: message, roomName: room });
         console.log(message, messages);
         dispatch(setMessage(""))
     }
