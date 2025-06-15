@@ -6,6 +6,7 @@ import { RootState } from '@/store/store';
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import checkExistUserName from '../serverActions/checkExistUserName';
+import { z } from "zod";
 
 
 // TODO: Доделать компонент с проверкой имени пользователя
@@ -13,15 +14,24 @@ function SetUserName() {
     const socket = useSocket();
     const dispatch = useDispatch();
     const userName = useSelector((state: RootState) => state.createRoom.userName);
+    const userNameSchema = z.string().nonempty();
+    let usernameSaved = false;
 
     async function saveUserName() {
         try {
-            const isAvailable = await checkExistUserName(userName, socket);
-            if (isAvailable) {
-                dispatch(setUserName(userName));
-                socket.emit("confirm-username", userName);
+            const result = userNameSchema.safeParse(userName)
+
+            if (result.success) {
+                const isAvailable = await checkExistUserName(userName, socket);
+
+                if (isAvailable) {
+                    dispatch(setUserName(userName));
+                    socket.emit("confirm-username", userName);
+                    usernameSaved = true;
+                } else { alert("Это имя пользователя уже занято") }
+
             } else {
-                alert("Это имя пользователя уже занято");
+                alert("Имя пользователя не может быть пустым")
             }
         } catch (error) {
             console.error("Error checking username:", error);

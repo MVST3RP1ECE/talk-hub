@@ -17,6 +17,8 @@ export default function Home() {
   if (!socket) return null;
   const dispatch = useDispatch();
   const createdRooms = useSelector((state: RootState) => state.createRoom.createdRooms);
+  console.log(socket.id);
+
 
   useEffect(() => {
     socket.on("check-rooms", (data: TCreatedRooms[]) => {
@@ -31,6 +33,14 @@ export default function Home() {
       console.log("ROOM IS CLOSED -", data);
       // dispatch(setCreatedRooms(data => data.filter))
     })
+
+    return () => {
+      // socket покинул приложение (закрыл вкладку, поймал 404 ошибку)
+      socket.off();
+      socket.on("disconnect", () => {
+        console.log("disconnected from app");
+      });
+    }
 
   }, [createdRooms]);
 

@@ -12,10 +12,10 @@ function checkExistUserName(username: string, socket: Socket): Promise<boolean> 
 
         socket.on("username-available", (data: boolean) => {
             if (data === true) {
-                console.log(`Пользователь с именем ${username} доступен`);
+                // console.log(`Пользователь с именем ${username} доступен`);
                 resolve(true);
             } else {
-                console.log(`Пользователь с именем ${username} уже существует`);
+                // console.log(`Пользователь с именем ${username} уже существует`);
                 resolve(false);
             }
         })

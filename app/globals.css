@@ -99,6 +99,15 @@
   --chart-5: oklch(60.0% 0.2664 50);
 }
 
+.scrollbar-hidden{
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar{
+  display: none;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

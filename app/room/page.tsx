@@ -25,7 +25,7 @@ function Room() {
 
     const dispatch = useDispatch();
     useEffect(() => {
-        socket.on("recive-message", dataS => {
+        socket.on("receive-message", dataS => {
             const message = dataS.data.message;
             const user = dataS.user;
             dispatch(setMessages([...messages, message]))
@@ -35,7 +35,7 @@ function Room() {
         console.log(messages);
 
         return () => {
-            socket.off("recive-message");
+            socket.off("receive-message");
         }
     }, [socket]);
 

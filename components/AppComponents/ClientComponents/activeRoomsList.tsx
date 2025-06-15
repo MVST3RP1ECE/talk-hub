@@ -5,15 +5,20 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 
 function ActiveRooms() {
+    const userName = useSelector((state: RootState) => state.createRoom.userName);
+    const roomName = useSelector((state: RootState) => state.createRoom.roomName);
+
     const createdRooms = useSelector((state: RootState) => state.createRoom.createdRooms);
     return (
-        <section className='flex flex-col items-center justify-around w-1/2 h-1/5 bg-background border-2 border-border rounded-md gap-2'>
-            <h1 className='flex items-center justify-center'>
+        <section className='flex flex-col items-center w-1/2 max-h-[200px] box-border bg-background border-2 border-border rounded-md gap-2'>
+            <h1 className='flex items-center justify-center pt-2'>
                 Active rooms
             </h1>
-            <div className='flex flex-col items-center justify-center w-full h-full p-2'>
+            <div className='flex flex-col items-center w-full p-2 gap-2 overflow-y-auto scrollbar-hidden'>
                 {createdRooms.map((room, index) => (
-                    <ActiveSingleRoom key={index} roomName={room.roomName} userName={room.userName} />
+                    <>
+                        <ActiveSingleRoom key={index} roomName={room.roomName} userName={room.userName} />
+                    </>
                 ))}
             </div>
         </section>

@@ -11,7 +11,7 @@ const SERVER_PORT = process.env.SERVER_PORT
 const usersInRoom: string[] = [];
 const createdRooms: Array<TCreatedRooms> = [];
 
-const HASH_TABLE_USERNAMES = new Map<string, string>()
+const MAP_USERNAMES = new Map<string, string>()
 
 const app = express().use(json()).use(cors());
 const server = createServer(app)
@@ -28,16 +28,28 @@ io.on("connection", socket => {
 
     socket.emit("check-rooms", createdRooms);
 
+    socket.on("disconnect", (reason) => {
+        console.log(`User ${socket.id} - disconnected by - ${reason}`);
+        MAP_USERNAMES.delete(socket.id)
+        console.log(MAP_USERNAMES);
+
+    })
+
     socket.on("confirm-username", (username: string) => {
         try {
-            if (HASH_TABLE_USERNAMES.has(username)) {
-                // username already exist
-                return socket.emit("username-available", false);
+            for (const [key, value] of MAP_USERNAMES) {
+                console.log(`key ${key} - value ${value}`);
+                if (value === username) {
+                    return socket.emit("username-available", false);
+                }
             }
-            HASH_TABLE_USERNAMES.set(username, socket.id);
+            console.log("get ->", MAP_USERNAMES.get(username))
+            console.log("has ->", MAP_USERNAMES.has(username))
+
+            MAP_USERNAMES.set(socket.id, username);
             socket.emit("username-available", true);
 
-            console.log(HASH_TABLE_USERNAMES);
+            console.log(MAP_USERNAMES);
         } catch (error) {
             console.log(error);
         }
@@ -46,17 +58,19 @@ io.on("connection", socket => {
 
     socket.on("join-room", (data: TCreateRoomState) => {
         socket.join(data.roomName)
-        socket.to(data.roomName).emit("recive-message", { data, user: socket.id })
+        socket.to(data.roomName).emit("receive-message", { data, user: socket.id })
 
         socket.broadcast.emit("room-created", data)
+
+
 
         console.log("join-room", data, socket.id);
     })
 
-    socket.on("send-message", (data: { roomName: string, message: string }) => {
+    socket.on("send-message", (data: { message: string, roomName: string }) => {
         console.log("send-message", data);
-        // socket.broadcast.emit("recive-message", { data, user: socket.id }) // Для всех
-        socket.to(data.roomName).emit("recive-message", { data, user: socket.id })
+        // socket.broadcast.emit("receive-message", { data, user: socket.id }) // Для всех
+        socket.to(data.roomName).emit("receive-message", { ...data, userSender: MAP_USERNAMES.get(socket.id) })
 
         // io.to(data.room).emit("recieve-message", data)
     })
