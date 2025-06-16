@@ -1,7 +1,7 @@
 "use client";
 import { Button } from '@/components/ui/button';
 import useSocket from '@/hooks/useSocket';
-import { setRoomName, setUserName } from '@/store/slices/createRoomSlice';
+import { setCreatedRooms, setRoomName, setUserName } from '@/store/slices/createRoomSlice';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 import { useDispatch } from 'react-redux';

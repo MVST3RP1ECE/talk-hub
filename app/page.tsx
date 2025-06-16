@@ -21,18 +21,23 @@ export default function Home() {
 
 
   useEffect(() => {
+    // Прослушивание на наличие комнат (для новых сокетов)
     socket.on("check-rooms", (data: TCreatedRooms[]) => {
       dispatch(setCreatedRooms(data));
     });
 
+    // Прослушиваем событие создания комнаты, принимаем инфу с сервера если
+    // создана новая комната
     socket.on("room-created", (data: TCreateRoomState) => {
-      dispatch(setCreatedRooms(Array(data)))
-    })
+      dispatch(setCreatedRooms(Array(data)));
+      console.log(createdRooms);
+
+    });
 
     socket.on("room-closed", (data: TCreatedRooms) => {
       console.log("ROOM IS CLOSED -", data);
       // dispatch(setCreatedRooms(data => data.filter))
-    })
+    });
 
     return () => {
       // socket покинул приложение (закрыл вкладку, поймал 404 ошибку)

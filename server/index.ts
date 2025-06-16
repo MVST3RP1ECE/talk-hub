@@ -56,10 +56,15 @@ io.on("connection", socket => {
 
     })
 
+    // Прослушиваем событие создания комнаты. Принимаем инфу с клиента если
+    // тот создаст комнату
     socket.on("join-room", (data: TCreateRoomState) => {
+        // Подключаем сокет к комнате
         socket.join(data.roomName)
+        // Вызываем сообщение о том, что пользователь получает сообщения
         socket.to(data.roomName).emit("receive-message", { data, user: socket.id })
-
+        // Уведомляем всех пользователей о создании комнаты 
+        // Тригер ререндера главной страницы
         socket.broadcast.emit("room-created", data)
 
 
@@ -69,6 +74,7 @@ io.on("connection", socket => {
 
     socket.on("send-message", (data: { message: string, roomName: string }) => {
         console.log("send-message", data);
+        console.log("CretedRooms->", createdRooms);
         // socket.broadcast.emit("receive-message", { data, user: socket.id }) // Для всех
         socket.to(data.roomName).emit("receive-message", { ...data, userSender: MAP_USERNAMES.get(socket.id) })
 
@@ -76,10 +82,24 @@ io.on("connection", socket => {
     })
 
     socket.on("room-closed", (data: TCreatedRooms) => {
-        socket.broadcast.emit("room-closed", data)
 
-        // socket.leave(data.roomName);
-        // socket.to(data.roomName).emit("user-left", { userName: data.userName });
+        // socket.broadcast.emit("room-closed", data)
+        socket.leave(data.roomName);
+        socket.to(data.roomName).emit("user-left", MAP_USERNAMES.get(socket.id))
+
+        createdRooms.forEach((room, index) => {
+            if ((room.roomName === data.roomName) && (room.userName === data.userName)) {
+                console.log(room, index);
+                createdRooms.splice(index, 1)
+                return createdRooms
+            }
+        })
+        console.log("CHECK-ROOMS", createdRooms);
+
+        if (createdRooms.length === 0) {
+            io.emit("check-rooms", [])
+        }
+
     })
 
     socket.on("room-created", (data: TCreatedRooms) => {
@@ -87,7 +107,9 @@ io.on("connection", socket => {
         socket.broadcast.emit("room-created", data)
     })
 
+    socket.on("update-created-rooms", data => {
 
+    })
 
 })
 
