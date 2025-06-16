@@ -18,7 +18,7 @@ export const roomSlice = createSlice({
             state.room = action.payload;
         },
         setUsers(state, action: PayloadAction<string[]>) {
-            state.users = [...state.users, ...action.payload]
+            state.users = action.payload;
         }
     }
 });

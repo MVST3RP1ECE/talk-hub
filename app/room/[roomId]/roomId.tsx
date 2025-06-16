@@ -46,6 +46,11 @@ function RoomId({ roomId }: { roomId: string }) {
             console.log(users);
         })
 
+        // Подписка на обновление пользователей в комнате
+        socket.on("room-users", (userList: string[]) => {
+            dispatch(setUsers(userList));
+        });
+
         console.log(...createdRooms);
 
         socket.on("receive-message", (msg) => {
@@ -99,6 +104,7 @@ function RoomId({ roomId }: { roomId: string }) {
             <div className='flex content-center justify-between h-full w-5/6 flex-col'>
                 <div className='flex items-center justify-center flex-row gap-2 mt-4'>
                     <h1 className='text-2xl font-bold'> Room: {roomId}</h1>
+                    {/* <span className='ml-4 text-lg'>Пользователей в комнате: {users.length}</span> */}
                 </div>
                 <div>
                     <h2 className='text-xl font-bold'>Messages</h2>
